@@ -1,75 +1,80 @@
+import { ShieldIcon, BellIcon, KeyIcon } from "@/components/Icons";
+
 export const metadata = {
-  title: "Settings - FlyRank",
-  description: "User settings and preference configuration placeholder",
+  title: "Settings — DealSight AI",
+  description: "User settings and preference configuration",
 };
 
 export default function SettingsPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-3xl">
+    <div className="space-y-8 py-4">
+      <div>
+        <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
           Settings & Preferences
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-[#a6a6a6]">
           Manage your account profile, notification preferences, and API credentials.
         </p>
       </div>
 
       <div className="space-y-6">
         {/* Profile Section Placeholder */}
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-            User Profile
+        <div className="rounded-2xl border border-white/10 bg-[#090909] p-6 shadow-[0_0_0_1px_rgba(0,153,255,0.15)] space-y-4">
+          <h2 className="text-lg font-medium text-white flex items-center gap-2">
+            <ShieldIcon className="w-5 h-5 text-[#0099ff]" />
+            <span>User Profile</span>
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-[#a6a6a6] uppercase tracking-wider mb-1.5">
                 Display Name
               </label>
               <input
                 type="text"
                 disabled
                 defaultValue="Capstone User"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200"
+                className="w-full rounded-full border border-white/15 bg-[#000000] px-4 py-2 text-xs text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-[#a6a6a6] uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <input
                 type="email"
                 disabled
-                defaultValue="user@flyrank-capstone.com"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200"
+                defaultValue="user@dealsight-ai.com"
+                className="w-full rounded-full border border-white/15 bg-[#000000] px-4 py-2 text-xs text-white"
               />
             </div>
           </div>
         </div>
 
         {/* Preferences Section Placeholder */}
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-            Notification Settings
+        <div className="rounded-2xl border border-white/10 bg-[#090909] p-6 shadow-[0_0_0_1px_rgba(0,153,255,0.15)] space-y-4">
+          <h2 className="text-lg font-medium text-white flex items-center gap-2">
+            <BellIcon className="w-5 h-5 text-[#0099ff]" />
+            <span>Notification Settings</span>
           </h2>
           <div className="space-y-3">
-            <label className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
-              <input type="checkbox" defaultChecked disabled className="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
-              Email alerts for ranking drops
+            <label className="flex items-center gap-3 text-xs text-white">
+              <input type="checkbox" defaultChecked disabled className="rounded-full border-white/30 text-[#0099ff] focus:ring-[#0099ff]" />
+              Email alerts for legitimate MSRP price drops
             </label>
-            <label className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
-              <input type="checkbox" defaultChecked disabled className="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
-              Weekly executive SEO reports digest
+            <label className="flex items-center gap-3 text-xs text-white">
+              <input type="checkbox" defaultChecked disabled className="rounded-full border-white/30 text-[#0099ff] focus:ring-[#0099ff]" />
+              Weekly executive deal intelligence summary
             </label>
           </div>
         </div>
 
         {/* API Credentials Placeholder */}
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
-            API Keys & Verification
+        <div className="rounded-2xl border border-white/10 bg-[#090909] p-6 shadow-[0_0_0_1px_rgba(0,153,255,0.15)] space-y-4">
+          <h2 className="text-lg font-medium text-white flex items-center gap-2">
+            <KeyIcon className="w-5 h-5 text-[#0099ff]" />
+            <span>API Keys & Verification</span>
           </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4">
+          <p className="text-xs text-[#a6a6a6]">
             Use your API key to authenticate requests against backend endpoints.
           </p>
           <div className="flex gap-2">
@@ -77,7 +82,7 @@ export default function SettingsPage() {
               type="text"
               readOnly
               value="pk_sample_key_placeholder"
-              className="flex-1 font-mono rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300"
+              className="flex-1 font-mono rounded-full border border-white/15 bg-[#000000] px-4 py-2 text-xs text-[#0099ff]"
             />
           </div>
         </div>

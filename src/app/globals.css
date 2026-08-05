@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ffffff;
+  --framer-blue: #0099ff;
+  --muted-silver: #a6a6a6;
+  --near-black: #090909;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-framer-blue: var(--framer-blue);
+  --color-muted-silver: var(--muted-silver);
+  --color-near-black: var(--near-black);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "GT Walsheim", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+/* Framer Design System Utility Classes */
+.framer-card {
+  background-color: #090909;
+  border: 1px solid rgba(0, 153, 255, 0.15);
+  box-shadow: 0px 0px 0px 1px rgba(0, 153, 255, 0.15);
+}
+
+.framer-card-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.framer-card-hover:hover {
+  border-color: rgba(0, 153, 255, 0.4);
+  box-shadow: 0px 0px 15px 0px rgba(0, 153, 255, 0.2);
+}
+
+.framer-glow {
+  background: radial-gradient(circle, rgba(0, 153, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.framer-frosted-pill {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.framer-frosted-pill:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.framer-white-pill {
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.framer-white-pill:hover {
+  opacity: 0.92;
+  transform: scale(1.02);
+}
+
+.framer-blue-pill {
+  background-color: #0099ff;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.framer-blue-pill:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
