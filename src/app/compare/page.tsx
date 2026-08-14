@@ -1,144 +1,165 @@
 import PriceGrid from "@/components/PriceGrid";
 import AiInsights from "@/components/AiInsights";
 import SpecMatrix from "@/components/SpecMatrix";
-import { CompareResponse } from "@/app/api/compare/route";
-import { TrendingIcon } from "@/components/Icons";
+import CompareSearchPanel from "@/components/CompareSearchPanel";
+import { buildCompareResponse, CompareResponse, ShoppingListing } from "@/lib/shopping";
+import { SearchIcon, TrendingIcon } from "@/components/Icons";
 
 export const dynamic = "force-dynamic";
 
 interface ComparePageProps {
-  searchParams: Promise<{ q?: string; query?: string }>;
+  searchParams: Promise<{ q?: string; query?: string; countries?: string; sort?: string; minTrust?: string; risk?: string; condition?: string }>;
 }
 
-async function getCompareData(searchQuery: string): Promise<CompareResponse> {
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-
-  try {
-    const res = await fetch(`${baseUrl}/api/compare?q=${encodeURIComponent(searchQuery)}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Failed to fetch comparison data");
-    return await res.json();
-  } catch (error) {
-    return {
-      query: searchQuery,
-      productName: searchQuery || "Sony WH-1000XM5",
-      productImage: "",
-      category: "Consumer Tech",
-      averagePrice: 365,
-      lowestPrice: 348,
-      msrp: 399.99,
-      deals: [
-        { store: "Best Buy", logo: "", price: 348, originalPrice: 399.99, discountPercentage: 13, rating: 4.7, reviewsCount: 4200, inStock: true, shipping: "Free Next-Day", url: "https://bestbuy.com", isLowestPrice: true },
-        { store: "Amazon", logo: "", price: 349.99, originalPrice: 399.99, discountPercentage: 12, rating: 4.8, reviewsCount: 18400, inStock: true, shipping: "Free Prime Two-Day", url: "https://amazon.com" },
-        { store: "Walmart", logo: "", price: 378.50, originalPrice: 399.99, discountPercentage: 5, rating: 4.5, reviewsCount: 1290, inStock: true, shipping: "Free 3-Day", url: "https://walmart.com" },
-      ],
-      aiAudit: {
-        verdict: "BUY NOW",
-        verdictBadgeColor: "emerald",
-        confidenceScore: 92,
-        specsToPriceRatio: "Exceptional (9.4/10). Industry leading noise cancellation & 30h battery.",
-        fakeDiscountReport: "Verified legitimate MSRP drop against 90-day moving average.",
-        recommendationDetails: "Current price ($348.00 at Best Buy) is within 3% of all-time low.",
-        potentialSavings: "Save $51.99 (13% off MSRP)",
-      },
-      specMatrix: {
-        features: ["Noise Cancellation", "Battery Life", "Driver Size"],
-        stores: ["Best Buy", "Amazon", "Walmart"],
-        rows: [
-          { featureName: "Noise Cancellation", values: { "Best Buy": "Auto NC Optimizer", Amazon: "Auto NC Optimizer", Walmart: "Auto NC Optimizer" } },
-          { featureName: "Battery Life", values: { "Best Buy": "30 Hrs", Amazon: "30 Hrs", Walmart: "30 Hrs" } },
-        ],
-      },
-      priceHistory: [
-        { month: "May", avgPrice: 389, lowestPrice: 368 },
-        { month: "Jun", avgPrice: 375, lowestPrice: 359 },
-        { month: "Jul", avgPrice: 360, lowestPrice: 348 },
-        { month: "Aug", avgPrice: 348, lowestPrice: 348 },
-      ],
-      datasource: "Simulated Intelligence Pipeline",
-    };
-  }
+async function getCompareData(searchQuery: string, countries: string): Promise<CompareResponse> {
+  return buildCompareResponse(
+    searchQuery,
+    countries
+      .split(",")
+      .map((country) => country.trim())
+      .filter(Boolean)
+  );
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
   const resolvedParams = await searchParams;
-  const query = resolvedParams.q || resolvedParams.query || "Sony WH-1000XM5";
-  const data = await getCompareData(query);
+  const query = resolvedParams.q || resolvedParams.query || "MacBook Pro M3";
+  const countries = resolvedParams.countries || "US,GB,PK";
+  const sort = resolvedParams.sort || "country-platform";
+  const minTrust = resolvedParams.minTrust || "0";
+  const risk = resolvedParams.risk || "all";
+  const condition = resolvedParams.condition || "all";
+  const data = await getCompareData(query, countries);
+  const filteredListings = filterAndSortListings(data.listings, { sort, minTrust, risk, condition });
+  const filteredCountryGroups = regroupCountries(data.countryGroups, filteredListings);
+  const filteredPlatformGroups = regroupPlatforms(data.platformGroups, filteredListings);
 
   return (
-    <div className="space-y-10 py-4">
-      {/* Product Banner Header */}
-      <div className="rounded-2xl border border-white/10 bg-[#090909] p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-semibold uppercase text-[#0099ff] font-mono tracking-wider">
+    <div className="animate-page-in space-y-10 pb-16">
+      <section className="animate-soft-scale rounded-[32px] bg-[#f7f7f7] p-6 sm:p-8">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div>
+            <span className="mb-4 inline-flex rounded-[100px] bg-white px-4 py-1.5 text-xs font-semibold uppercase text-[#5b616e]">
               {data.category}
             </span>
-            <span className="text-[#a6a6a6]">•</span>
-            <span className="text-xs text-[#a6a6a6]">
-              Query: &quot;{data.query}&quot;
-            </span>
+            <h1 className="cb-display max-w-4xl text-5xl leading-none text-[#0a0b0d] sm:text-6xl">{data.productName}</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-[#5b616e]">
+              Results are grouped by country and platform. Ratings, seller signals, site reputation, and warranty risk are
+              processed into a trust-first buying view.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            {data.productName}
-          </h1>
-        </div>
 
-        <div className="flex items-center gap-4 bg-[#000000] px-5 py-3 rounded-2xl border border-white/10 shrink-0">
-          <div>
-            <span className="text-xs text-[#a6a6a6] block">Lowest Price</span>
-            <span className="text-2xl font-black text-[#0099ff]">${data.lowestPrice.toFixed(2)}</span>
-          </div>
-          <div className="h-8 w-px bg-white/10" />
-          <div>
-            <span className="text-xs text-[#a6a6a6] block">Original MSRP</span>
-            <span className="text-sm line-through font-mono text-[#a6a6a6]">${data.msrp.toFixed(2)}</span>
+          <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[460px]">
+            <Stat label="Lowest" value={formatCurrency(data.lowestPrice, data.currency)} />
+            <Stat label="Average" value={formatCurrency(data.averagePrice, data.currency)} />
+            <Stat label="Countries" value={data.countries.join(", ")} />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* AI Intelligence & Deal Audit Card */}
-      <AiInsights
-        aiAudit={data.aiAudit}
-        lowestPrice={data.lowestPrice}
-        msrp={data.msrp}
-        datasource={data.datasource}
+      <CompareSearchPanel
+        query={query}
+        countries={countries.split(",").map((country) => country.trim()).filter(Boolean)}
+        sort={sort}
+        minTrust={minTrust}
+        risk={risk}
+        condition={condition}
       />
 
-      {/* Price Comparison Grid */}
-      <PriceGrid deals={data.deals} productName={data.productName} />
+      <section className="grid gap-4 md:grid-cols-3">
+        <SourceCard icon={SearchIcon} label="Shopping retrieval" value={data.datasource.shopping} />
+        <SourceCard icon={TrendingIcon} label="Trust analysis" value={data.datasource.trustAgent} />
+        <SourceCard icon={SearchIcon} label="Generated" value={new Date(data.generatedAt).toLocaleString()} />
+      </section>
 
-      {/* Side-by-Side Spec Matrix */}
-      <SpecMatrix specMatrix={data.specMatrix} />
-
-      {/* Price History Trend Chart Component */}
-      <div className="rounded-2xl border border-white/10 bg-[#090909] p-6 space-y-4">
-        <h2 className="text-lg font-medium text-white flex items-center gap-2">
-          <TrendingIcon className="w-5 h-5 text-[#0099ff]" />
-          <span>6-Month Historical Price Trend</span>
-        </h2>
-        <div className="grid grid-cols-6 gap-2 pt-4 border-t border-white/10">
-          {data.priceHistory.map((item, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-2">
-              <div className="text-[10px] font-mono text-[#0099ff] font-bold">
-                ${item.lowestPrice}
-              </div>
-              <div className="w-full bg-[#000000] rounded-t-lg h-24 flex items-end justify-center p-1 border border-white/10">
-                <div
-                  className="w-full bg-[#0099ff] rounded-sm transition-all"
-                  style={{
-                    height: `${Math.max(20, Math.min(100, (item.lowestPrice / (data.msrp || 1)) * 100))}%`,
-                  }}
-                />
-              </div>
-              <span className="text-xs text-[#a6a6a6] font-semibold">{item.month}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <AiInsights aiAudit={data.aiAudit} datasource={data.datasource} />
+      <PriceGrid listings={filteredListings} />
+      <SpecMatrix countryGroups={filteredCountryGroups} platformGroups={filteredPlatformGroups} />
     </div>
   );
+}
+
+function filterAndSortListings(
+  listings: ShoppingListing[],
+  filters: { sort: string; minTrust: string; risk: string; condition: string }
+): ShoppingListing[] {
+  const minimumTrust = Number.parseInt(filters.minTrust, 10) || 0;
+  const riskRank = { Low: 0, Medium: 1, High: 2 };
+
+  return listings
+    .filter((listing) => listing.siteTrustScore >= minimumTrust)
+    .filter((listing) => {
+      if (filters.risk === "Low") return listing.sellerRisk === "Low";
+      if (filters.risk === "Medium") return listing.sellerRisk === "Low" || listing.sellerRisk === "Medium";
+      return true;
+    })
+    .filter((listing) => filters.condition === "all" || listing.condition === filters.condition)
+    .sort((a, b) => {
+      if (filters.sort === "price-low") return a.price - b.price;
+      if (filters.sort === "trust-high") return b.siteTrustScore - a.siteTrustScore || a.price - b.price;
+      if (filters.sort === "risk-low") return riskRank[a.sellerRisk] - riskRank[b.sellerRisk] || riskRank[a.warrantyRisk] - riskRank[b.warrantyRisk];
+      return a.country.localeCompare(b.country) || a.platform.localeCompare(b.platform) || a.price - b.price;
+    });
+}
+
+function regroupCountries(originalGroups: CompareResponse["countryGroups"], listings: ShoppingListing[]): CompareResponse["countryGroups"] {
+  return originalGroups
+    .map((group) => {
+      const groupListings = listings.filter((listing) => listing.country === group.country);
+      const prices = groupListings.map((listing) => listing.price);
+
+      return {
+        ...group,
+        listings: groupListings,
+        lowestPrice: prices.length ? Math.min(...prices) : 0,
+        averagePrice: prices.length ? Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length) : 0,
+      };
+    })
+    .filter((group) => group.listings.length > 0);
+}
+
+function regroupPlatforms(originalGroups: CompareResponse["platformGroups"], listings: ShoppingListing[]): CompareResponse["platformGroups"] {
+  return originalGroups
+    .map((group) => {
+      const platformListings = listings.filter((listing) => listing.platform === group.platform);
+      const prices = platformListings.map((listing) => listing.price);
+
+      return {
+        ...group,
+        listingsCount: platformListings.length,
+        countries: Array.from(new Set(platformListings.map((listing) => listing.country))),
+        averagePrice: prices.length ? Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length) : 0,
+        averageTrustScore: platformListings.length
+          ? Math.round(platformListings.reduce((sum, listing) => sum + listing.siteTrustScore, 0) / platformListings.length)
+          : 0,
+      };
+    })
+    .filter((group) => group.listingsCount > 0);
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[24px] bg-white p-5">
+      <p className="text-xs text-[#7c828a]">{label}</p>
+      <p className="cb-number mt-2 text-xl text-[#0a0b0d]">{value}</p>
+    </div>
+  );
+}
+
+function SourceCard({ icon: Icon, label, value }: { icon: typeof SearchIcon; label: string; value: string }) {
+  return (
+    <div className="cb-card animate-rise-in p-5">
+      <Icon className="h-5 w-5 text-[#0052ff]" />
+      <p className="mt-4 text-xs text-[#7c828a]">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-[#0a0b0d]">{value}</p>
+    </div>
+  );
+}
+
+function formatCurrency(value: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat("en", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+  } catch {
+    return `$${value}`;
+  }
 }
