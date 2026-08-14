@@ -1,58 +1,76 @@
 "use client";
 
+import { CompareResponse } from "@/lib/shopping";
 import { MatrixIcon } from "@/components/Icons";
 
 interface SpecMatrixProps {
-  specMatrix: {
-    features: string[];
-    stores: string[];
-    rows: { featureName: string; values: Record<string, string> }[];
-  };
+  countryGroups: CompareResponse["countryGroups"];
+  platformGroups: CompareResponse["platformGroups"];
 }
 
-export default function SpecMatrix({ specMatrix }: SpecMatrixProps) {
+export default function SpecMatrix({ countryGroups, platformGroups }: SpecMatrixProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-medium tracking-tight text-white flex items-center gap-2">
-          <MatrixIcon className="w-5 h-5 text-[#0099ff]" />
-          <span>Feature & Spec Matrix Comparison</span>
-        </h2>
-        <span className="text-xs text-[#a6a6a6]">
-          Auto-generated side-by-side spec comparison
-        </span>
+    <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="cb-card animate-rise-in overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-[#dee1e6] p-6">
+          <MatrixIcon className="h-5 w-5 text-[#0052ff]" />
+          <div>
+            <h2 className="text-lg font-semibold text-[#0a0b0d]">Country and platform matrix</h2>
+            <p className="text-sm text-[#5b616e]">Normalized pricing and trust scores by market.</p>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-[#f7f7f7] text-xs text-[#5b616e]">
+              <tr>
+                <th className="px-6 py-4 font-semibold">Country</th>
+                <th className="px-6 py-4 font-semibold">Platform</th>
+                <th className="px-6 py-4 font-semibold">Price</th>
+                <th className="px-6 py-4 font-semibold">Trust</th>
+                <th className="px-6 py-4 font-semibold">Verdict</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#dee1e6]">
+              {countryGroups.flatMap((group) =>
+                group.listings.map((listing) => (
+                  <tr key={listing.id}>
+                    <td className="px-6 py-4 font-semibold text-[#0a0b0d]">{group.countryName}</td>
+                    <td className="px-6 py-4 text-[#5b616e]">{listing.platform}</td>
+                    <td className="cb-number px-6 py-4 text-[#0a0b0d]">{listing.priceDisplay}</td>
+                    <td className="cb-number px-6 py-4 text-[#0052ff]">{listing.siteTrustScore}</td>
+                    <td className="px-6 py-4 text-[#5b616e]">{listing.verdict}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#090909]">
-        <table className="w-full text-left text-sm text-[#a6a6a6]">
-          <thead className="bg-[#000000] text-xs uppercase text-[#a6a6a6] font-semibold tracking-wider border-b border-white/10">
-            <tr>
-              <th scope="col" className="py-3.5 px-4 font-semibold text-white">
-                Specification / Feature
-              </th>
-              {specMatrix.stores.map((store, i) => (
-                <th key={i} scope="col" className="py-3.5 px-4 font-semibold text-[#0099ff]">
-                  {store}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {specMatrix.rows.map((row, idx) => (
-              <tr key={idx} className="hover:bg-white/5 transition-colors">
-                <td className="py-3.5 px-4 font-semibold text-white bg-[#000000]/40 whitespace-nowrap text-xs">
-                  {row.featureName}
-                </td>
-                {specMatrix.stores.map((store, i) => (
-                  <td key={i} className="py-3.5 px-4 text-[#a6a6a6] text-xs">
-                    {row.values[store] || "—"}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <aside className="animate-rise-in delay-1 rounded-[24px] bg-[#f7f7f7] p-6">
+        <h3 className="text-lg font-semibold text-[#0a0b0d]">Platform rollup</h3>
+        <div className="mt-5 space-y-4">
+          {platformGroups.map((platform) => (
+            <div key={platform.platform} className="rounded-[20px] border border-[#dee1e6] bg-white p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-[#0a0b0d]">{platform.platform}</p>
+                  <p className="mt-1 text-xs text-[#5b616e]">{platform.listingsCount} listing(s)</p>
+                </div>
+                <span className="cb-number text-[#0052ff]">{platform.averageTrustScore}</span>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-xs text-[#5b616e]">
+                <span>Countries</span>
+                <span>{platform.countries.join(", ")}</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs text-[#5b616e]">
+                <span>Verdict</span>
+                <span>{platform.verdict}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+    </section>
   );
 }

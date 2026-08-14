@@ -1,103 +1,149 @@
 "use client";
 
-import { StoreDeal } from "@/app/api/compare/route";
-import { StoreIcon, TruckIcon } from "@/components/Icons";
+import { useState } from "react";
+import { ShoppingListing } from "@/lib/shopping";
+import { ShieldIcon, StoreIcon, TruckIcon } from "@/components/Icons";
 
 interface PriceGridProps {
-  deals: StoreDeal[];
-  productName: string;
+  listings: ShoppingListing[];
 }
 
-export default function PriceGrid({ deals }: PriceGridProps) {
+const riskColor = {
+  Low: "text-[#05b169]",
+  Medium: "text-[#0052ff]",
+  High: "text-[#cf202f]",
+};
+
+const verdictColor = {
+  Recommended: "text-[#05b169]",
+  "Verify Seller": "text-[#0052ff]",
+  Wait: "text-[#7c828a]",
+  Avoid: "text-[#cf202f]",
+};
+
+export default function PriceGrid({ listings }: PriceGridProps) {
+  const listSignature = listings.map((listing) => listing.id).join("|");
+  const [pagination, setPagination] = useState({ signature: listSignature, count: 6 });
+  const visibleCount = pagination.signature === listSignature ? pagination.count : 6;
+  const visibleListings = listings.slice(0, visibleCount);
+  const remainingCount = Math.max(0, listings.length - visibleCount);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-medium tracking-tight text-white flex items-center gap-2">
-          <StoreIcon className="w-5 h-5 text-[#0099ff]" />
-          <span>Multi-Store Live Price Comparison</span>
-        </h2>
-        <span className="text-xs text-[#a6a6a6] font-mono">
-          Updated Real-Time
+    <section className="space-y-5">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+          <h2 className="cb-display text-4xl text-[#0a0b0d]">Country-wise trusted listings</h2>
+          <p className="mt-2 text-sm text-[#5b616e]">Sorted by country first, then platform and price.</p>
+        </div>
+        <span className="rounded-[100px] bg-[#eef0f3] px-4 py-2 text-xs font-semibold text-[#0a0b0d]">
+          Showing {Math.min(visibleCount, listings.length)} of {listings.length} normalized results
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {deals.map((deal, idx) => (
-          <div
-            key={idx}
-            className={`relative rounded-2xl p-5 transition-all flex flex-col justify-between ${
-              deal.isLowestPrice
-                ? "bg-[#090909] border border-[#0099ff]/50 shadow-[0_0_15px_rgba(0,153,255,0.25)]"
-                : "bg-[#090909] border border-white/10 hover:border-white/20"
-            }`}
-          >
-            {deal.isLowestPrice && (
-              <div className="absolute -top-3 right-4 rounded-full bg-[#0099ff] text-white px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider shadow-md">
-                Best Price
-              </div>
-            )}
-
-            <div>
-              {/* Store Name & Rating */}
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="font-semibold text-lg text-white">{deal.store}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-[#a6a6a6] mt-0.5">
-                    <span className="text-amber-400 font-semibold">★ {deal.rating}</span>
-                    <span>({deal.reviewsCount.toLocaleString()} reviews)</span>
-                  </div>
-                </div>
-                <span
-                  className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${
-                    deal.inStock
-                      ? "bg-[#0099ff]/15 text-[#0099ff] border border-[#0099ff]/30"
-                      : "bg-white/10 text-[#a6a6a6]"
-                  }`}
-                >
-                  {deal.inStock ? "In Stock" : "Out of Stock"}
-                </span>
-              </div>
-
-              {/* Pricing */}
-              <div className="my-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold text-white tracking-tight">
-                    ${deal.price.toFixed(2)}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {listings.length === 0 && (
+          <div className="cb-card col-span-full p-8 text-center">
+            <h3 className="text-lg font-semibold text-[#0a0b0d]">No listings match these filters</h3>
+            <p className="mt-2 text-sm text-[#5b616e]">Try lowering the trust threshold, adding another country, or allowing more seller risk.</p>
+          </div>
+        )}
+        {visibleListings.map((listing) => (
+          <article key={listing.id} className="cb-card animate-rise-in p-6">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row">
+              <div>
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <span className="rounded-[100px] bg-[#eef0f3] px-3 py-1 text-xs font-semibold text-[#0a0b0d]">
+                    {listing.countryName}
                   </span>
-                  {deal.originalPrice > deal.price && (
-                    <span className="text-sm line-through text-[#a6a6a6] font-mono">
-                      ${deal.originalPrice.toFixed(2)}
+                  {listing.isLowestInCountry && (
+                    <span className="rounded-[100px] bg-[#0052ff] px-3 py-1 text-xs font-semibold text-white">
+                      Lowest in country
+                    </span>
+                  )}
+                  {listing.isLowestOverall && (
+                    <span className="rounded-[100px] bg-[#0a0b0d] px-3 py-1 text-xs font-semibold text-white">
+                      Lowest overall
                     </span>
                   )}
                 </div>
-                {deal.discountPercentage > 0 && (
-                  <p className="text-xs font-semibold text-[#0099ff] mt-1">
-                    Save {deal.discountPercentage}% (${(deal.originalPrice - deal.price).toFixed(2)})
-                  </p>
-                )}
-                <p className="text-xs text-[#a6a6a6] mt-2 flex items-center gap-1.5">
-                  <TruckIcon className="w-3.5 h-3.5 text-[#a6a6a6]" />
-                  <span>{deal.shipping}</span>
+                <h3 className="line-clamp-2 text-lg font-semibold leading-6 text-[#0a0b0d]">{listing.title}</h3>
+                <p className="mt-2 text-sm text-[#5b616e]">
+                  {listing.platform} · Seller: {listing.seller}
                 </p>
+              </div>
+              <div className="text-left sm:text-right">
+                <p className="cb-number text-3xl text-[#0a0b0d]">{listing.priceDisplay}</p>
+                <p className={`mt-1 text-sm font-semibold ${verdictColor[listing.verdict]}`}>{listing.verdict}</p>
               </div>
             </div>
 
-            {/* Framer Pill CTA Button */}
-            <a
-              href={deal.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`w-full py-2.5 px-4 rounded-full font-semibold text-xs text-center transition-all ${
-                deal.isLowestPrice
-                  ? "bg-[#0099ff] text-white hover:opacity-90 shadow-[0_0_12px_rgba(0,153,255,0.3)]"
-                  : "bg-white text-black hover:bg-slate-200"
-              }`}
-            >
-              View at {deal.store} &rarr;
-            </a>
-          </div>
+            <div className="mt-5 grid gap-3 border-y border-[#dee1e6] py-5 sm:grid-cols-4">
+              <Metric label="Match" value={`${listing.productMatchConfidence}%`} />
+              <Metric label="Site trust" value={`${listing.siteTrustScore}/100`} />
+              <Metric label="Seller risk" value={listing.sellerRisk} color={riskColor[listing.sellerRisk]} />
+              <Metric label="Warranty" value={listing.warrantyRisk} color={riskColor[listing.warrantyRisk]} />
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-[1fr_220px]">
+              <div>
+                <p className="text-sm leading-6 text-[#5b616e]">{listing.trustSummary}</p>
+                <ul className="mt-3 space-y-2">
+                  {listing.evidence.slice(0, 3).map((item, index) => (
+                    <li key={`${listing.id}-evidence-${index}`} className="flex gap-2 text-xs leading-5 text-[#5b616e]">
+                      <ShieldIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#0052ff]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-[20px] bg-[#f7f7f7] p-4">
+                <div className="flex items-center gap-2 text-xs text-[#5b616e]">
+                  <StoreIcon className="h-4 w-4 text-[#0052ff]" />
+                  <span>{listing.domain}</span>
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-xs text-[#5b616e]">
+                  <TruckIcon className="h-4 w-4 text-[#7c828a]" />
+                  <span>{listing.delivery || "Delivery not listed"}</span>
+                </div>
+                <p className="cb-number mt-3 text-sm text-[#0a0b0d]">
+                  {listing.rating ? `${listing.rating} rating` : "No rating"}{" "}
+                  {listing.reviewsCount ? `(${listing.reviewsCount.toLocaleString()})` : ""}
+                </p>
+                <a
+                  href={listing.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-[100px] bg-[#0052ff] px-4 text-sm font-semibold text-white hover:bg-[#003ecc]"
+                >
+                  View listing
+                </a>
+              </div>
+            </div>
+          </article>
         ))}
       </div>
+
+      {remainingCount > 0 && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setPagination({ signature: listSignature, count: visibleCount + 8 })}
+            className="h-12 rounded-[100px] bg-[#eef0f3] px-6 text-sm font-semibold text-[#0a0b0d] transition hover:bg-[#dee1e6]"
+          >
+            Show more results ({remainingCount} remaining)
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Metric({ label, value, color = "text-[#0a0b0d]" }: { label: string; value: string; color?: string }) {
+  return (
+    <div>
+      <p className="text-xs text-[#7c828a]">{label}</p>
+      <p className={`cb-number mt-1 text-base ${color}`}>{value}</p>
     </div>
   );
 }
