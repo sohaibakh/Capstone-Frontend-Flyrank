@@ -1,12 +1,10 @@
-import { NextResponse } from "next/server";
-
 export async function GET() {
-  return NextResponse.json({
+  return Response.json({
     status: "ok",
-    service: "DealSight AI Engine",
+    service: "DealSight AI Shopping Trust Engine",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
-    aiConfigured: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY),
-    shoppingApiConfigured: Boolean(process.env.SERPAPI_KEY || process.env.RAINFOREST_API_KEY || process.env.UNWRANGLE_API_KEY),
+    grokConfigured: Boolean(process.env.GROK_API_KEY || process.env.XAI_API_KEY),
+    serperConfigured: Boolean(process.env.SERPER_API_KEY),
   });
 }
