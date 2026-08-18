@@ -129,22 +129,21 @@ const COUNTRY_OPTIONS: Record<string, { name: string; currency: string; gl: stri
 
 const TRUSTED_PLATFORMS = ["amazon", "apple", "best buy", "walmart", "target", "b&h", "ebay", "currys", "john lewis"];
 const WARRANTY_WARNINGS = ["renewed", "refurbished", "used", "open box", "international", "seller warranty", "no warranty"];
+const SHOPPING_RESULTS_PER_COUNTRY = 6;
+const REPUTATION_DOMAIN_LIMIT = 2;
+const SERPER_TIMEOUT_MS = 2500;
+const GEMINI_TIMEOUT_MS = 4500;
 
 export async function buildCompareResponse(query: string, countries: string[]): Promise<CompareResponse> {
   const selectedCountries = normalizeCountries(countries);
   const serperKey = process.env.SERPER_API_KEY;
-  const grokKey = process.env.GROK_API_KEY || process.env.XAI_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
 
-  const rawListings = serperKey
-    ? await fetchSerperListings(query, selectedCountries, serperKey)
-    : createDemoListings(query, selectedCountries);
+  const { listings: rawListings, isLiveShopping } = await getShoppingListings(query, selectedCountries, serperKey);
+  const listingsWithReputation = isLiveShopping ? await attachReputationSnippetsSafely(rawListings, serperKey) : rawListings;
 
-  const listingsWithReputation = serperKey
-    ? await attachReputationSnippets(rawListings, serperKey)
-    : rawListings;
-
-  const trustedListings = grokKey
-    ? await analyzeWithGrok(query, listingsWithReputation, grokKey)
+  const trustedListings = geminiKey
+    ? await analyzeWithGemini(query, listingsWithReputation, geminiKey)
     : listingsWithReputation.map((listing) => ({ ...listing, ...scoreListingHeuristically(query, listing) }));
 
   const listings = markLowestPrices(trustedListings);
@@ -168,8 +167,8 @@ export async function buildCompareResponse(query: string, countries: string[]): 
     platformGroups,
     aiAudit: buildAiAudit(listings, lowestPrice, averagePrice),
     datasource: {
-      shopping: serperKey ? "Live shopping index" : "Demo shopping index",
-      trustAgent: grokKey ? "AI trust engine" : "Heuristic trust engine",
+      shopping: isLiveShopping ? "Live shopping index" : "Demo shopping index",
+      trustAgent: geminiKey ? "AI trust engine" : "Heuristic trust engine",
     },
   };
 }
@@ -192,7 +191,8 @@ async function fetchSerperListings(query: string, countries: string[], apiKey: s
           "Content-Type": "application/json",
           "X-API-KEY": apiKey,
         },
-        body: JSON.stringify({ q: query, gl: locale.gl, hl: locale.hl, num: 10 }),
+        body: JSON.stringify({ q: query, gl: locale.gl, hl: locale.hl, num: SHOPPING_RESULTS_PER_COUNTRY }),
+        signal: AbortSignal.timeout(SERPER_TIMEOUT_MS),
       });
 
       if (!response.ok) {
@@ -200,15 +200,45 @@ async function fetchSerperListings(query: string, countries: string[], apiKey: s
       }
 
       const data = (await response.json()) as SerperResponse;
-      return (data.shopping || []).slice(0, 8).map((item, index) => normalizeSerperItem(item, country, index));
+      return (data.shopping || []).slice(0, SHOPPING_RESULTS_PER_COUNTRY).map((item, index) => normalizeSerperItem(item, country, index));
     })
   );
 
   return batches.flat();
 }
 
+async function getShoppingListings(
+  query: string,
+  countries: string[],
+  apiKey?: string
+): Promise<{ listings: ShoppingListing[]; isLiveShopping: boolean }> {
+  if (!apiKey) {
+    return { listings: createDemoListings(query, countries), isLiveShopping: false };
+  }
+
+  try {
+    const listings = await fetchSerperListings(query, countries, apiKey);
+    if (listings.length === 0) {
+      return { listings: createDemoListings(query, countries), isLiveShopping: false };
+    }
+    return { listings, isLiveShopping: true };
+  } catch {
+    return { listings: createDemoListings(query, countries), isLiveShopping: false };
+  }
+}
+
+async function attachReputationSnippetsSafely(listings: ShoppingListing[], apiKey?: string): Promise<ShoppingListing[]> {
+  if (!apiKey) return listings;
+
+  try {
+    return await attachReputationSnippets(listings, apiKey);
+  } catch {
+    return listings;
+  }
+}
+
 async function attachReputationSnippets(listings: ShoppingListing[], apiKey: string): Promise<ShoppingListing[]> {
-  const uniqueDomains = Array.from(new Set(listings.map((listing) => listing.domain))).slice(0, 8);
+  const uniqueDomains = Array.from(new Set(listings.map((listing) => listing.domain))).slice(0, REPUTATION_DOMAIN_LIMIT);
   const snippetMap = new Map<string, ReputationSnippet[]>();
 
   await Promise.all(
@@ -220,6 +250,7 @@ async function attachReputationSnippets(listings: ShoppingListing[], apiKey: str
           "X-API-KEY": apiKey,
         },
         body: JSON.stringify({ q: `${domain} reviews complaints warranty return policy`, num: 4 }),
+        signal: AbortSignal.timeout(SERPER_TIMEOUT_MS),
       });
 
       if (!response.ok) return;
@@ -276,73 +307,82 @@ function normalizeSerperItem(item: SerperShoppingItem, country: string, index: n
   };
 }
 
-async function analyzeWithGrok(query: string, listings: ShoppingListing[], apiKey: string): Promise<ShoppingListing[]> {
+async function analyzeWithGemini(query: string, listings: ShoppingListing[], apiKey: string): Promise<ShoppingListing[]> {
   try {
-    const response = await fetch("https://api.x.ai/v1/chat/completions", {
+    const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.GROK_MODEL || "latest",
-        temperature: 0.1,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a shopping trust agent. Return strict JSON only. Do not invent facts beyond the provided listings and reputation snippets.",
-          },
+        systemInstruction: {
+          parts: [
+            {
+              text:
+                "You are a shopping trust agent. Return strict JSON only. Do not invent facts beyond the provided listings and reputation snippets.",
+            },
+          ],
+        },
+        contents: [
           {
             role: "user",
-            content: JSON.stringify({
-              task:
-                "Score each listing for product match, seller/site reputation, fake discount risk, and warranty risk. Evidence must reference supplied fields or snippets.",
-              requestedProduct: query,
-              allowedVerdicts: ["Recommended", "Verify Seller", "Wait", "Avoid"],
-              allowedRiskLevels: ["Low", "Medium", "High"],
-              outputShape: {
-                listings: [
-                  {
-                    id: "string",
-                    productMatchConfidence: "0-100 number",
-                    siteTrustScore: "0-100 number",
-                    sellerRisk: "Low|Medium|High",
-                    warrantyRisk: "Low|Medium|High",
-                    fakeDiscountRisk: "Low|Medium|High",
-                    verdict: "Recommended|Verify Seller|Wait|Avoid",
-                    trustSummary: "short sentence",
-                    evidence: ["2-4 short evidence strings"],
-                    flags: ["short warning labels"],
+            parts: [
+              {
+                text: JSON.stringify({
+                  task:
+                    "Score each listing for product match, seller/site reputation, fake discount risk, and warranty risk. Evidence must reference supplied fields or snippets.",
+                  requestedProduct: query,
+                  allowedVerdicts: ["Recommended", "Verify Seller", "Wait", "Avoid"],
+                  allowedRiskLevels: ["Low", "Medium", "High"],
+                  outputShape: {
+                    listings: [
+                      {
+                        id: "string",
+                        productMatchConfidence: "0-100 number",
+                        siteTrustScore: "0-100 number",
+                        sellerRisk: "Low|Medium|High",
+                        warrantyRisk: "Low|Medium|High",
+                        fakeDiscountRisk: "Low|Medium|High",
+                        verdict: "Recommended|Verify Seller|Wait|Avoid",
+                        trustSummary: "short sentence",
+                        evidence: ["2-4 short evidence strings"],
+                        flags: ["short warning labels"],
+                      },
+                    ],
                   },
-                ],
+                  listings: listings.map(toGeminiListing),
+                }),
               },
-              listings: listings.map(toGrokListing),
-            }),
+            ],
           },
         ],
+        generationConfig: {
+          temperature: 0.1,
+          response_mime_type: "application/json",
+        },
       }),
+      signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
     });
 
     if (!response.ok) {
-      throw new Error("Grok request failed");
+      throw new Error("Gemini request failed");
     }
 
-    const data = (await response.json()) as { choices?: { message?: { content?: string } }[] };
-    const content = data.choices?.[0]?.message?.content || "";
+    const data = (await response.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const content = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("") || "";
     const parsed = JSON.parse(content) as { listings?: Partial<TrustSignal & { id: string; flags: string[] }>[] };
     const signalMap = new Map((parsed.listings || []).map((item) => [item.id, item]));
 
     return listings.map((listing) => {
-      const grokSignal = signalMap.get(listing.id);
+      const aiSignal = signalMap.get(listing.id);
       const fallback = scoreListingHeuristically(query, listing);
 
       return {
         ...listing,
         ...fallback,
-        ...sanitizeTrustSignal(grokSignal),
-        flags: grokSignal?.flags?.length ? grokSignal.flags.slice(0, 4) : fallback.flags,
+        ...sanitizeTrustSignal(aiSignal),
+        flags: aiSignal?.flags?.length ? aiSignal.flags.slice(0, 4) : fallback.flags,
       };
     });
   } catch {
@@ -350,7 +390,7 @@ async function analyzeWithGrok(query: string, listings: ShoppingListing[], apiKe
   }
 }
 
-function toGrokListing(listing: ShoppingListing) {
+function toGeminiListing(listing: ShoppingListing) {
   return {
     id: listing.id,
     title: listing.title,
