@@ -249,10 +249,6 @@ body {
     linear-gradient(180deg, #68b8d7 0%, #adc1de 56%, #ffffff 100%);
 }
 
-.vanta-clouds-fallback canvas {
-  display: block;
-}
-
 .onboarding-starfield {
   background-image:
     radial-gradient(circle at 14% 24%, rgba(0, 82, 255, 0.38) 0 1px, transparent 2px),

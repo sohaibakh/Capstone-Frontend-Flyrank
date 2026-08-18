@@ -7,7 +7,6 @@ type VantaEffect = {
 };
 
 type VantaWindow = Window & {
-  THREE?: unknown;
   VANTA?: {
     CLOUDS?: (options: {
       el: HTMLElement;
