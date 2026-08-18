@@ -84,21 +84,21 @@ export default function CompareSearchPanel({
     <>
       {(isSubmitting || isPending) && <AuditLoadingOverlay />}
 
-      <form onSubmit={handleSubmit} className="animate-rise-in rounded-[32px] border border-[#dee1e6] bg-white p-5 sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row">
+      <form onSubmit={handleSubmit} className="cb-card mx-auto w-full max-w-[1080px] animate-rise-in p-5 sm:p-6" data-no-scroll-reveal>
+        <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_420px]">
           <label className="relative flex-1">
-            <span className="mb-2 block text-xs font-semibold uppercase text-[#7c828a]">Product search</span>
-            <SearchIcon className="absolute bottom-4 left-4 h-5 w-5 text-[#7c828a]" />
+            <span className="mb-2 block text-xs font-semibold uppercase text-[#5b616e]">Product search</span>
+            <SearchIcon className="absolute bottom-4 left-4 h-5 w-5 text-[#5b616e]" />
             <input
               type="text"
               value={draftQuery}
               onChange={(event) => setDraftQuery(event.target.value)}
-              className="h-14 w-full rounded-[100px] border border-[#dee1e6] bg-[#f7f7f7] px-5 pl-12 text-base text-[#0a0b0d] outline-none transition focus:border-[#0052ff] focus:bg-white"
+              className="cb-focus h-14 w-full rounded-[100px] border border-[#dee1e6] bg-[#f7f7f7] px-5 pl-12 text-base text-[#0a0b0d] outline-none focus:bg-white"
               placeholder="MacBook Pro M3, Sony WH-1000XM5, iPhone 15 Pro"
             />
           </label>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:w-[420px]">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Select label="Sort by" value={selectedSort} onChange={setSelectedSort}>
               <option value="country-platform">Country, then platform</option>
               <option value="price-low">Lowest price</option>
@@ -116,8 +116,10 @@ export default function CompareSearchPanel({
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_420px]">
           <div>
-            <span className="mb-2 block text-xs font-semibold uppercase text-[#7c828a]">Filter by country</span>
-            <div className="flex flex-wrap gap-2">
+            <span id="country-filter-label" className="mb-2 block text-xs font-semibold uppercase text-[#5b616e]">
+              Filter by country
+            </span>
+            <div className="cb-stagger flex flex-wrap gap-2" role="group" aria-labelledby="country-filter-label">
               {countryOptions.map((country) => {
                 const active = selectedCountries.includes(country.code);
                 return (
@@ -125,7 +127,8 @@ export default function CompareSearchPanel({
                     key={country.code}
                     type="button"
                     onClick={() => toggleCountry(country.code)}
-                    className={`rounded-[100px] px-4 py-2 text-sm font-semibold transition ${
+                    aria-pressed={active}
+                    className={`cb-action rounded-[100px] px-4 py-2 text-sm font-semibold ${
                       active ? "bg-[#0052ff] text-white" : "bg-[#eef0f3] text-[#0a0b0d] hover:bg-[#dee1e6]"
                     }`}
                   >
@@ -160,13 +163,16 @@ export default function CompareSearchPanel({
             </p>
             {suggestions.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold uppercase text-[#7c828a]">Popular searches</span>
+                <span id="popular-searches-label" className="text-xs font-semibold uppercase text-[#5b616e]">
+                  Popular searches
+                </span>
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
                     onClick={() => setDraftQuery(suggestion)}
-                    className="rounded-[100px] bg-[#eef0f3] px-3 py-1.5 text-xs font-semibold text-[#0a0b0d] transition hover:bg-[#dee1e6]"
+                    aria-label={`Use popular search ${suggestion}`}
+                    className="cb-action rounded-[100px] bg-[#eef0f3] px-3 py-1.5 text-xs font-semibold text-[#0a0b0d] hover:bg-[#dee1e6]"
                   >
                     {suggestion}
                   </button>
@@ -177,7 +183,8 @@ export default function CompareSearchPanel({
           <button
             type="submit"
             disabled={isSubmitting || isPending}
-            className="h-12 rounded-[100px] bg-[#0052ff] px-6 text-sm font-semibold text-white hover:bg-[#003ecc] disabled:cursor-wait disabled:bg-[#a8b8cc]"
+            aria-busy={isSubmitting || isPending}
+            className="cb-action h-12 rounded-[100px] bg-[#0052ff] px-6 text-sm font-semibold text-white shadow-sm shadow-[#0052ff]/20 hover:bg-[#003ecc] disabled:cursor-wait disabled:bg-[#5b616e]"
           >
             {isSubmitting || isPending ? "Auditing..." : "Run audit"}
           </button>
@@ -189,42 +196,18 @@ export default function CompareSearchPanel({
 
 function AuditLoadingOverlay() {
   return (
-    <div className="fixed inset-0 z-[80] overflow-y-auto bg-white/92 px-4 py-8 backdrop-blur-md">
-      <div className="mx-auto max-w-[1100px] space-y-6">
-        <section className="animate-soft-scale rounded-[32px] bg-[#f7f7f7] p-6 sm:p-8">
-          <div className="flex items-center gap-3">
-            <span className="h-3 w-3 rounded-full bg-[#0052ff] animate-pulse-dot" />
-            <span className="h-3 w-3 rounded-full bg-[#0052ff] animate-pulse-dot delay-1" />
-            <span className="h-3 w-3 rounded-full bg-[#0052ff] animate-pulse-dot delay-2" />
-            <p className="ml-2 text-sm font-semibold text-[#0a0b0d]">Running shopping trust audit</p>
-          </div>
-          <div className="mt-7 h-12 max-w-3xl rounded-[24px] animate-shimmer" />
-          <div className="mt-4 h-5 max-w-xl rounded-[100px] animate-shimmer" />
-        </section>
-
-        <section className="rounded-[32px] bg-[#0a0b0d] p-6 sm:p-8">
-          <div className="h-5 w-44 rounded-[100px] bg-[#16181c]" />
-          <div className="mt-6 h-10 max-w-lg rounded-[24px] bg-[#16181c]" />
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {[0, 1, 2].map((item) => (
-              <div key={item} className="h-32 rounded-[24px] bg-[#16181c]" />
-            ))}
-          </div>
-        </section>
-
-        <section className="grid gap-4 lg:grid-cols-2">
-          {[0, 1, 2, 3].map((item) => (
-            <div key={item} className="rounded-[24px] border border-[#dee1e6] bg-white p-6">
-              <div className="h-5 w-28 rounded-[100px] animate-shimmer" />
-              <div className="mt-5 h-6 w-3/4 rounded-[100px] animate-shimmer" />
-              <div className="mt-4 grid grid-cols-4 gap-3">
-                {[0, 1, 2, 3].map((metric) => (
-                  <div key={metric} className="h-12 rounded-[16px] animate-shimmer" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
+    <div
+      className="fixed inset-0 z-[80] grid place-items-center bg-white/84 px-4 backdrop-blur-md"
+      role="status"
+      aria-live="polite"
+      data-no-scroll-reveal
+    >
+      <div className="audit-loader-card w-full max-w-sm rounded-lg border border-[#dee1e6] bg-white p-7 text-center shadow-2xl shadow-black/10">
+        <div className="mx-auto h-12 w-12 rounded-full audit-loader-ring" aria-hidden="true" />
+        <h2 className="mt-5 text-base font-semibold text-[#0a0b0d]">Running the audit</h2>
+        <p className="mt-2 text-sm leading-6 text-[#5b616e]">
+          Checking prices, seller trust, warranty risk, and discount signals.
+        </p>
       </div>
     </div>
   );
@@ -243,8 +226,8 @@ function Select({
 }) {
   return (
     <label>
-      <span className="mb-2 block text-xs font-semibold uppercase text-[#7c828a]">{label}</span>
-      <span className="relative block h-14 overflow-hidden rounded-[100px] border border-[#dee1e6] bg-[#f7f7f7] transition focus-within:border-[#0052ff] focus-within:bg-white">
+      <span className="mb-2 block text-xs font-semibold uppercase text-[#5b616e]">{label}</span>
+      <span className="cb-focus relative block h-14 overflow-hidden rounded-[100px] border border-[#dee1e6] bg-[#f7f7f7] focus-within:bg-white">
         <select
           value={value}
           onChange={(event) => onChange(event.target.value)}

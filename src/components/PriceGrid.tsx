@@ -9,15 +9,15 @@ interface PriceGridProps {
 }
 
 const riskColor = {
-  Low: "text-[#05b169]",
+  Low: "text-[#047a46]",
   Medium: "text-[#0052ff]",
   High: "text-[#cf202f]",
 };
 
 const verdictColor = {
-  Recommended: "text-[#05b169]",
+  Recommended: "text-[#047a46]",
   "Verify Seller": "text-[#0052ff]",
-  Wait: "text-[#7c828a]",
+  Wait: "text-[#5b616e]",
   Avoid: "text-[#cf202f]",
 };
 
@@ -40,7 +40,7 @@ export default function PriceGrid({ listings }: PriceGridProps) {
         </span>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="cb-stagger grid gap-4 lg:grid-cols-2">
         {listings.length === 0 && (
           <div className="cb-card col-span-full p-8 text-center">
             <h3 className="text-lg font-semibold text-[#0a0b0d]">No listings match these filters</h3>
@@ -48,7 +48,7 @@ export default function PriceGrid({ listings }: PriceGridProps) {
           </div>
         )}
         {visibleListings.map((listing) => (
-          <article key={listing.id} className="cb-card animate-rise-in p-6">
+          <article key={listing.id} className="cb-card p-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row">
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
@@ -97,24 +97,24 @@ export default function PriceGrid({ listings }: PriceGridProps) {
                 </ul>
               </div>
 
-              <div className="rounded-[20px] bg-[#f7f7f7] p-4">
+              <div className="rounded-lg border border-[#dee1e6] bg-[#f7f7f7] p-4">
                 <div className="flex items-center gap-2 text-xs text-[#5b616e]">
                   <StoreIcon className="h-4 w-4 text-[#0052ff]" />
                   <span>{listing.domain}</span>
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-xs text-[#5b616e]">
-                  <TruckIcon className="h-4 w-4 text-[#7c828a]" />
+                  <TruckIcon className="h-4 w-4 text-[#5b616e]" />
                   <span>{listing.delivery || "Delivery not listed"}</span>
                 </div>
                 <p className="cb-number mt-3 text-sm text-[#0a0b0d]">
                   {listing.rating ? `${listing.rating} rating` : "No rating"}{" "}
-                  {listing.reviewsCount ? `(${listing.reviewsCount.toLocaleString()})` : ""}
+                  {listing.reviewsCount ? `(${listing.reviewsCount.toLocaleString("en-US")})` : ""}
                 </p>
                 <a
                   href={listing.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-[100px] bg-[#0052ff] px-4 text-sm font-semibold text-white hover:bg-[#003ecc]"
+                  className="cb-action mt-4 inline-flex h-10 w-full items-center justify-center rounded-[100px] bg-[#0052ff] px-4 text-sm font-semibold text-white shadow-sm shadow-[#0052ff]/20 hover:bg-[#003ecc]"
                 >
                   View listing
                 </a>
@@ -129,7 +129,7 @@ export default function PriceGrid({ listings }: PriceGridProps) {
           <button
             type="button"
             onClick={() => setPagination({ signature: listSignature, count: visibleCount + 8 })}
-            className="h-12 rounded-[100px] bg-[#eef0f3] px-6 text-sm font-semibold text-[#0a0b0d] transition hover:bg-[#dee1e6]"
+            className="cb-action h-12 rounded-[100px] bg-[#eef0f3] px-6 text-sm font-semibold text-[#0a0b0d] hover:bg-[#dee1e6]"
           >
             Show more results ({remainingCount} remaining)
           </button>
@@ -142,7 +142,7 @@ export default function PriceGrid({ listings }: PriceGridProps) {
 function Metric({ label, value, color = "text-[#0a0b0d]" }: { label: string; value: string; color?: string }) {
   return (
     <div>
-      <p className="text-xs text-[#7c828a]">{label}</p>
+      <p className="text-xs text-[#5b616e]">{label}</p>
       <p className={`cb-number mt-1 text-base ${color}`}>{value}</p>
     </div>
   );
