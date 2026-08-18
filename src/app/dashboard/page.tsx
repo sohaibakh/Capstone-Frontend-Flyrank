@@ -9,14 +9,14 @@ export const metadata = {
 const stats = [
   { name: "Markets ready", value: "US, GB, PK", change: "Default" },
   { name: "Shopping source", value: "Index", change: process.env.SERPER_API_KEY ? "Connected" : "Demo" },
-  { name: "Trust agent", value: "AI", change: process.env.GROK_API_KEY || process.env.XAI_API_KEY ? "Connected" : "Heuristic" },
+  { name: "Trust agent", value: "AI", change: process.env.GEMINI_API_KEY ? "Connected" : "Heuristic" },
   { name: "Risk modules", value: "4", change: "Active" },
 ];
 
 export default function DashboardPage() {
   return (
-    <div className="animate-page-in space-y-8 pb-16">
-      <section className="animate-soft-scale rounded-[32px] bg-[#f7f7f7] p-8">
+    <div className="animate-page-in mx-auto w-full max-w-[1200px] space-y-8 pb-16">
+      <section className="cb-surface animate-soft-scale p-8">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <h1 className="cb-display text-5xl text-[#0a0b0d]">Trust agent dashboard</h1>
@@ -24,16 +24,16 @@ export default function DashboardPage() {
               Operational view for the capstone pipeline: retrieval, normalization, AI trust analysis, and country-wise ranking.
             </p>
           </div>
-          <Link href="/compare?q=MacBook%20Pro%20M3" className="rounded-[100px] bg-[#0052ff] px-5 py-3 text-sm font-semibold text-white hover:bg-[#003ecc]">
+          <Link href="/compare?q=MacBook%20Pro%20M3" className="cb-action rounded-[100px] bg-[#0052ff] px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-[#0052ff]/20 hover:bg-[#003ecc]">
             Run audit
           </Link>
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="cb-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((item) => (
-          <div key={item.name} className="cb-card animate-rise-in p-6">
-            <p className="text-xs font-semibold uppercase text-[#7c828a]">{item.name}</p>
+          <div key={item.name} className="cb-card p-6">
+            <p className="text-xs font-semibold uppercase text-[#5b616e]">{item.name}</p>
             <p className="cb-number mt-3 text-2xl text-[#0a0b0d]">{item.value}</p>
             <span className="mt-4 inline-flex rounded-[100px] bg-[#eef0f3] px-3 py-1 text-xs font-semibold text-[#0a0b0d]">
               {item.change}
@@ -55,7 +55,7 @@ export default function DashboardPage() {
               ["AI trust review", "Scores product match, seller/site reputation, warranty, and fake discount risk."],
               ["Buying verdict", "Produces a structured recommendation that the frontend renders as evidence."],
             ].map(([title, body]) => (
-              <div key={title} className="rounded-[24px] bg-[#f7f7f7] p-5">
+              <div key={title} className="rounded-lg border border-[#dee1e6] bg-[#f7f7f7] p-5">
                 <p className="font-semibold text-[#0a0b0d]">{title}</p>
                 <p className="mt-2 text-sm leading-6 text-[#5b616e]">{body}</p>
               </div>
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="animate-rise-in delay-1 rounded-[24px] bg-[#0a0b0d] p-6 text-white">
+        <div className="animate-rise-in delay-1 rounded-lg bg-[#0a0b0d] p-6 text-white shadow-2xl shadow-black/15">
           <h2 className="text-lg font-semibold">Risk modules</h2>
           <div className="mt-5 space-y-4">
             {[

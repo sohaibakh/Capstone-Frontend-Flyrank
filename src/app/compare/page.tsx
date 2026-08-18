@@ -6,6 +6,10 @@ import { buildCompareResponse, CompareResponse, ShoppingListing } from "@/lib/sh
 import { SearchIcon, TrendingIcon } from "@/components/Icons";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 10;
+
+const MAX_QUERY_LENGTH = 80;
+const MAX_COUNTRIES = 4;
 
 interface ComparePageProps {
   searchParams: Promise<{ q?: string; query?: string; countries?: string; sort?: string; minTrust?: string; risk?: string; condition?: string }>;
@@ -13,11 +17,12 @@ interface ComparePageProps {
 
 async function getCompareData(searchQuery: string, countries: string): Promise<CompareResponse> {
   return buildCompareResponse(
-    searchQuery,
+    searchQuery.trim().slice(0, MAX_QUERY_LENGTH) || "MacBook Pro M3",
     countries
       .split(",")
       .map((country) => country.trim())
       .filter(Boolean)
+      .slice(0, MAX_COUNTRIES)
   );
 }
 
@@ -35,8 +40,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const filteredPlatformGroups = regroupPlatforms(data.platformGroups, filteredListings);
 
   return (
-    <div className="animate-page-in space-y-10 pb-16">
-      <section className="animate-soft-scale rounded-[32px] bg-[#f7f7f7] p-6 sm:p-8">
+    <div className="animate-page-in mx-auto w-full max-w-[1200px] space-y-10 pb-16">
+      <section className="cb-surface animate-soft-scale p-6 sm:p-8">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
             <span className="mb-4 inline-flex rounded-[100px] bg-white px-4 py-1.5 text-xs font-semibold uppercase text-[#5b616e]">
@@ -49,7 +54,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[460px]">
+          <div className="cb-stagger grid gap-3 sm:grid-cols-3 lg:min-w-[460px]">
             <Stat label="Lowest" value={formatCurrency(data.lowestPrice, data.currency)} />
             <Stat label="Average" value={formatCurrency(data.averagePrice, data.currency)} />
             <Stat label="Countries" value={data.countries.join(", ")} />
@@ -66,7 +71,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         condition={condition}
       />
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="cb-stagger grid gap-4 md:grid-cols-3">
         <SourceCard icon={SearchIcon} label="Shopping retrieval" value={data.datasource.shopping} />
         <SourceCard icon={TrendingIcon} label="Trust analysis" value={data.datasource.trustAgent} />
         <SourceCard icon={SearchIcon} label="Generated" value={new Date(data.generatedAt).toLocaleString()} />
@@ -139,8 +144,8 @@ function regroupPlatforms(originalGroups: CompareResponse["platformGroups"], lis
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[24px] bg-white p-5">
-      <p className="text-xs text-[#7c828a]">{label}</p>
+    <div className="rounded-lg border border-[#dee1e6] bg-white p-5 shadow-sm">
+      <p className="text-xs text-[#5b616e]">{label}</p>
       <p className="cb-number mt-2 text-xl text-[#0a0b0d]">{value}</p>
     </div>
   );
@@ -148,9 +153,9 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function SourceCard({ icon: Icon, label, value }: { icon: typeof SearchIcon; label: string; value: string }) {
   return (
-    <div className="cb-card animate-rise-in p-5">
+    <div className="cb-card p-5">
       <Icon className="h-5 w-5 text-[#0052ff]" />
-      <p className="mt-4 text-xs text-[#7c828a]">{label}</p>
+      <p className="mt-4 text-xs text-[#5b616e]">{label}</p>
       <p className="mt-1 text-sm font-semibold text-[#0a0b0d]">{value}</p>
     </div>
   );

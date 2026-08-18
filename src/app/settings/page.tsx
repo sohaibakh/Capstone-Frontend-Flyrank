@@ -7,18 +7,17 @@ export const metadata = {
 
 const envRows = [
   { key: "SERPER_API_KEY", purpose: "Shopping results, ratings, seller names, source URLs, and reputation snippets." },
-  { key: "GROK_API_KEY", purpose: "Grok trust agent for seller/site reputation, warranty risk, fake discount risk, and verdicts." },
-  { key: "XAI_API_KEY", purpose: "Alternative xAI key name supported by the backend if you prefer xAI naming." },
-  { key: "GROK_MODEL", purpose: "Optional model override. Defaults to latest." },
+  { key: "GEMINI_API_KEY", purpose: "AI trust agent for seller/site reputation, warranty risk, fake discount risk, and verdicts." },
+  { key: "GEMINI_MODEL", purpose: "Optional model override. Defaults to gemini-3.5-flash." },
 ];
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-8 pb-16">
-      <section className="rounded-[32px] bg-[#f7f7f7] p-8">
+    <div className="animate-page-in mx-auto w-full max-w-[1040px] space-y-8 pb-16">
+      <section className="cb-surface animate-soft-scale p-8">
         <h1 className="cb-display text-5xl text-[#0a0b0d]">Agent configuration</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-[#5b616e]">
-          Add these variables to `.env.local` when your Serper.dev and Grok keys are ready. The app runs in demo mode until
+          Add these variables to `.env.local` when your shopping and AI keys are ready. The app runs in demo mode until
           they are present.
         </p>
       </section>
@@ -39,12 +38,12 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <aside className="rounded-[24px] bg-[#0a0b0d] p-6 text-white">
+        <aside className="animate-rise-in delay-1 rounded-lg bg-[#0a0b0d] p-6 text-white shadow-2xl shadow-black/15">
           <ShieldIcon className="h-5 w-5 text-[#0052ff]" />
           <h2 className="mt-5 text-lg font-semibold">Current mode</h2>
           <div className="mt-5 space-y-4">
             <Status label="Serper" active={Boolean(process.env.SERPER_API_KEY)} />
-            <Status label="Grok" active={Boolean(process.env.GROK_API_KEY || process.env.XAI_API_KEY)} />
+            <Status label="AI trust engine" active={Boolean(process.env.GEMINI_API_KEY)} />
           </div>
           <p className="mt-6 text-sm leading-6 text-[#a8acb3]">
             Missing keys use demo shopping data and heuristic scoring so the frontend remains presentable during development.
