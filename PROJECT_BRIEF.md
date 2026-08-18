@@ -1,0 +1,3 @@
+# Project Brief
+
+DealSight AI solves the problem of online shoppers struggling to decide which product listing is trustworthy when prices, sellers, warranties, and marketplaces vary across countries. It is built for everyday buyers, students, and small online shoppers who want a clearer buying decision instead of manually comparing listings and guessing which deal is safe. I chose this idea because it started as an early concept during my studies, but we could not complete it at that time; finishing it now allowed me to bring that original capstone idea to life and turn it into a working AI-powered shopping trust and comparison tool.

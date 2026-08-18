@@ -1,0 +1,156 @@
+# Testing And Audit Evidence
+
+## Unit Test Evidence
+
+Component tested:
+
+- `src/components/CompareSearchPanel.test.tsx`
+
+What the tests cover:
+
+- The product search, sort, minimum trust, and country filter controls render with accessible labels.
+- Country filter buttons expose selected state with `aria-pressed`.
+- Selecting Canada updates state.
+- Choosing a suggested product and pressing `Run audit` submits the expected `/compare` URL.
+
+Command:
+
+```bash
+npm run test
+```
+
+Output:
+
+```text
+Test Files  1 passed (1)
+Tests       2 passed (2)
+Duration    1.83s
+```
+
+## Coverage Evidence
+
+Command:
+
+```bash
+npm run test:coverage
+```
+
+Output:
+
+```text
+Test Files  1 passed (1)
+Tests       2 passed (2)
+Duration    1.98s
+
+Coverage summary:
+Statements   : 61.9% (39/63)
+Branches     : 51.72% (30/58)
+Functions    : 42.1% (16/38)
+Lines        : 62.71% (37/59)
+
+CompareSearchPanel.tsx:
+Statements   : 86.04%
+Branches     : 73.68%
+Functions    : 77.77%
+Lines        : 89.74%
+```
+
+## Build And Lint Evidence
+
+Commands:
+
+```bash
+npm run lint
+npm run build
+```
+
+Output:
+
+```text
+npm run lint
+eslint completed with no errors.
+
+npm run build
+Compiled successfully.
+TypeScript completed successfully.
+Generated static pages successfully.
+```
+
+## End-To-End Critical Flow
+
+Manual flow to verify before submission:
+
+1. Open the deployed production URL.
+2. Start from the home page.
+3. Enter or select `MacBook Pro M3`.
+4. Select countries: United States, United Kingdom, Pakistan.
+5. Run the audit.
+6. Confirm the compare page loads with listing cards, AI verdict, price metrics, and country/platform matrix.
+7. Change filters and confirm results update without a crash.
+8. Open one external listing link and confirm it opens in a new tab.
+
+Status:
+
+- Local component/unit test: passed.
+- Production E2E browser pass: pending until Vercel deployment URL exists.
+
+## Performance Audit
+
+Required final audit target:
+
+- Lighthouse Performance: 90+
+- Lighthouse Accessibility: 90+
+- Run on mobile and desktop.
+
+Status:
+
+- Pending until production deployment.
+- Local Lighthouse could not be run in this environment because no Lighthouse or Chrome CLI is available.
+
+Recommended command after deployment:
+
+```bash
+npx lighthouse https://your-production-url.vercel.app --view
+```
+
+Record these scores after running Lighthouse:
+
+| Audit | Mobile Score | Desktop Score | Status |
+| --- | ---: | ---: | --- |
+| Performance | Pending | Pending | Pending deployment |
+| Accessibility | Pending | Pending | Pending deployment |
+| Best Practices | Pending | Pending | Pending deployment |
+| SEO | Pending | Pending | Pending deployment |
+
+## Accessibility Audit
+
+Accessibility improvements already made:
+
+- Added skip-to-main-content link.
+- Added visible global focus states.
+- Added `aria-current` to active navigation links.
+- Added `aria-pressed` to selected filter/demo buttons.
+- Added `aria-live` status for audit loading state.
+- Added table captions, column scopes, and row headers.
+- Improved low-contrast muted text.
+- Added reduced-motion handling for animations.
+
+Recommended final audit:
+
+- Run WAVE in the browser on the production URL.
+- Run Axe DevTools on `/`, `/compare`, `/dashboard`, and `/history`.
+
+Status:
+
+- Code-level accessibility improvements: completed.
+- WAVE/Axe browser output: pending production URL and browser audit.
+
+## Improvement Made From Audit Findings
+
+Finding:
+
+- Some small muted labels used `#7c828a` on white, which can fail WCAG AA contrast for normal text.
+
+Improvement:
+
+- Replaced small muted text with darker `#5b616e` and used darker green `#047a46` for success text on white backgrounds.
