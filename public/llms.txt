@@ -1,0 +1,32 @@
+# DealSight AI
+
+DealSight AI is a frontend capstone project for shopping trust intelligence. It helps users compare product listings across countries by combining price data, seller reputation signals, warranty risk, fake-discount checks, and an AI-generated buying verdict.
+
+## Primary Pages
+
+- `/` - Home page and guided demo.
+- `/compare` - Product comparison and trust-audit workspace.
+- `/dashboard` - Operational overview of the trust-analysis pipeline.
+- `/history` - Demo saved-audits and product-watch area.
+- `/settings` - Environment variable and API configuration guidance.
+- `/health` - Human-readable health/status page.
+- `/api/health` - JSON health endpoint.
+- `/api/compare?q=MacBook%20Pro%20M3` - JSON comparison endpoint.
+
+## AI Usage
+
+The app uses Gemini when `GEMINI_API_KEY` is configured. Gemini receives normalized product listings and reputation snippets, then returns strict JSON trust scores for product match, seller risk, warranty risk, fake-discount risk, verdict, evidence, and warning flags.
+
+If Gemini is unavailable, the app falls back to deterministic heuristic scoring. If live shopping data is unavailable, the app falls back to demo listings.
+
+## Important Documentation
+
+- `/README.md` in the source repository explains setup, architecture, AI integration, limitations, and future improvements.
+- `/PROJECT_BRIEF.md` in the source repository summarizes the problem, audience, and reason for choosing the idea.
+- `/TESTING_AND_AUDIT.md` in the source repository records testing and audit evidence.
+- `/DEPLOYMENT_CHECKLIST.md` in the source repository records production deployment steps and rollback notes.
+- `/Reflection.md` in the source repository contains the project reflection.
+
+## Limitations
+
+AI recommendations are decision support, not a guarantee of seller reliability. Live shopping data quality depends on external providers. The project is a capstone prototype and not a financial, legal, or purchasing guarantee.
