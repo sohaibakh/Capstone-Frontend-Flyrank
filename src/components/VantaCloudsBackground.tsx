@@ -30,6 +30,7 @@ type VantaWindow = Window & {
 
 const threeUrl = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js";
 const vantaUrl = "https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.clouds.min.js";
+const desktopCloudsQuery = "(min-width: 768px)";
 
 let scriptLoadPromise: Promise<void> | null = null;
 
@@ -70,10 +71,11 @@ export default function VantaCloudsBackground({ className = "" }: { className?: 
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const canRunDecorativeCanvas = window.matchMedia(desktopCloudsQuery).matches;
     let effect: VantaEffect | null = null;
     let cancelled = false;
 
-    if (reduceMotion) return;
+    if (reduceMotion || !canRunDecorativeCanvas) return;
 
     loadVantaScripts()
       .then(() => {
