@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "DealSight AI - Shopping Trust Intelligence",
   description: "AI-powered product price comparison, seller reputation analysis, fake discount detection, and warranty risk scoring.",
   icons: {
-    icon: "/dealsight-shield-logo.png",
-    apple: "/dealsight-shield-logo.png",
+    icon: "/dealsight-logo.png",
+    apple: "/dealsight-logo.png",
   },
 };
 

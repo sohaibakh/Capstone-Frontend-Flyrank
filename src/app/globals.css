@@ -433,3 +433,46 @@ body {
     animation: none;
   }
 }
+
+@media (max-width: 767px) {
+  .animate-page-in,
+  .animate-rise-in,
+  .animate-soft-scale,
+  .cb-stagger > *,
+  .onboarding-float,
+  .onboarding-result-enter,
+  .onboarding-response-line {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .animate-shimmer,
+  .animate-pulse-dot,
+  .audit-loader-ring,
+  .onboarding-scan::after,
+  .onboarding-starfield::before {
+    animation: none !important;
+  }
+
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  [class*="shadow-2xl"] {
+    box-shadow: 0 1px 2px rgba(10, 11, 13, 0.08) !important;
+  }
+
+  [class*="blur-3xl"] {
+    display: none !important;
+  }
+
+  .vanta-clouds-fallback {
+    background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 62%, #ffffff 100%);
+  }
+
+  .onboarding-starfield {
+    background-image: linear-gradient(135deg, #05070d 0%, #071326 58%, #03050a 100%);
+  }
+}

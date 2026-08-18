@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { AuditIcon, MatrixIcon, ShieldIcon } from "@/components/Icons";
 
@@ -21,7 +20,6 @@ export default function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr]">
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5 text-[#0a0b0d]">
-              <Image src="/dealsight-shield-logo.png" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
               <span className="text-lg font-semibold">
                 DealSight <span className="text-[#0052ff]">AI</span>
               </span>

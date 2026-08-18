@@ -137,6 +137,7 @@ function HomeExperience() {
           alt=""
           fill
           priority
+          quality={68}
           className="absolute inset-0 object-cover object-center opacity-90"
           sizes="100vw"
         />
@@ -231,6 +232,7 @@ function HomeExperience() {
               src="/shopping-trust-cover.jpg"
               alt="Online shopping and trust decision"
               fill
+              quality={70}
               className="object-cover object-center opacity-[0.72]"
               sizes="(min-width: 1024px) 620px, 100vw"
             />
@@ -255,6 +257,7 @@ function HomeExperience() {
                   src="/shopify-commerce-dashboard.png"
                   alt="Commerce dashboard preview"
                   fill
+                  quality={70}
                   className="object-cover object-left-top"
                   sizes="(min-width: 1024px) 520px, 100vw"
                 />
