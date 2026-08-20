@@ -3,7 +3,8 @@ import AiInsights from "@/components/AiInsights";
 import SpecMatrix from "@/components/SpecMatrix";
 import CompareSearchPanel from "@/components/CompareSearchPanel";
 import { buildCompareResponse, CompareResponse, ShoppingListing } from "@/lib/shopping";
-import { SearchIcon, TrendingIcon } from "@/components/Icons";
+import { SearchIcon } from "@/components/icons/SearchIcon";
+import { TrendingIcon } from "@/components/icons/TrendingIcon";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 10;

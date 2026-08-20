@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { AuditIcon, MatrixIcon, ShieldIcon, TrendingIcon } from "@/components/Icons";
+import { AuditIcon } from "@/components/icons/AuditIcon";
+import { MatrixIcon } from "@/components/icons/MatrixIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
+import { TrendingIcon } from "@/components/icons/TrendingIcon";
 
 export const metadata = {
   title: "Dashboard - DealSight AI",

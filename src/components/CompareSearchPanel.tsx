@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { SearchIcon, ShieldIcon } from "@/components/Icons";
+import { SearchIcon } from "@/components/icons/SearchIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 const countryOptions = [
   { code: "US", label: "United States" },

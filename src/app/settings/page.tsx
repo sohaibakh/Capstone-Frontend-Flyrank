@@ -1,4 +1,5 @@
-import { KeyIcon, ShieldIcon } from "@/components/Icons";
+import { KeyIcon } from "@/components/icons/KeyIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 export const metadata = {
   title: "Settings - DealSight AI",

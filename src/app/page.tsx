@@ -1,7 +1,7 @@
 import Image from "next/image";
 import CompareSearchPanel from "@/components/CompareSearchPanel";
 import HomeBelowFold from "@/components/HomeBelowFold";
-import { ShieldIcon } from "@/components/Icons";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 export const revalidate = 60;
 

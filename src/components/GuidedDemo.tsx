@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { SearchIcon } from "@/components/Icons";
+import { SearchIcon } from "@/components/icons/SearchIcon";
 
 const guideProducts = [
   {

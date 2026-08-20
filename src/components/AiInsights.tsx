@@ -1,7 +1,10 @@
 "use client";
 
 import { AiAudit, CompareResponse } from "@/lib/shopping";
-import { AuditIcon, BrainIcon, ShieldIcon, TargetIcon } from "@/components/Icons";
+import { AuditIcon } from "@/components/icons/AuditIcon";
+import { BrainIcon } from "@/components/icons/BrainIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
+import { TargetIcon } from "@/components/icons/TargetIcon";
 
 interface AiInsightsProps {
   aiAudit: AiAudit;

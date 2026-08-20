@@ -1,4 +1,6 @@
-import { CheckIcon, HealthIcon, ShieldIcon } from "@/components/Icons";
+import { CheckIcon } from "@/components/icons/CheckIcon";
+import { HealthIcon } from "@/components/icons/HealthIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 export const dynamic = "force-dynamic";
 

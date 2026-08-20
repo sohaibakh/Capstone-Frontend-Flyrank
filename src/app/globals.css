@@ -33,7 +33,7 @@ body {
     radial-gradient(circle at 24px 24px, rgba(0, 82, 255, 0.035) 0 1px, transparent 1px) 0 0 / 32px 32px,
     linear-gradient(180deg, #ffffff 0%, #fbfbfc 42%, #ffffff 100%);
   color: #0a0b0d;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   letter-spacing: 0;
   overflow-x: hidden;
 }
@@ -70,7 +70,7 @@ body {
 }
 
 .cb-number {
-  font-family: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
 }

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { ShoppingListing } from "@/lib/shopping";
-import { ShieldIcon, StoreIcon, TruckIcon } from "@/components/Icons";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
+import { StoreIcon } from "@/components/icons/StoreIcon";
+import { TruckIcon } from "@/components/icons/TruckIcon";
 
 interface PriceGridProps {
   listings: ShoppingListing[];

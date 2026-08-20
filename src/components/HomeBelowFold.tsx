@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AuditIcon, BrainIcon, MatrixIcon, SearchIcon, ShieldIcon, StoreIcon } from "@/components/Icons";
+import { AuditIcon } from "@/components/icons/AuditIcon";
+import { BrainIcon } from "@/components/icons/BrainIcon";
+import { MatrixIcon } from "@/components/icons/MatrixIcon";
+import { SearchIcon } from "@/components/icons/SearchIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
+import { StoreIcon } from "@/components/icons/StoreIcon";
 
 const agentSteps = [
   {

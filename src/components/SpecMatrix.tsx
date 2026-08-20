@@ -1,7 +1,7 @@
 "use client";
 
 import { CompareResponse } from "@/lib/shopping";
-import { MatrixIcon } from "@/components/Icons";
+import { MatrixIcon } from "@/components/icons/MatrixIcon";
 
 interface SpecMatrixProps {
   countryGroups: CompareResponse["countryGroups"];

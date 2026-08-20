@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BellIcon } from "@/components/Icons";
+import { BellIcon } from "@/components/icons/BellIcon";
 
 export const metadata = {
   title: "Saved Audits - DealSight AI",

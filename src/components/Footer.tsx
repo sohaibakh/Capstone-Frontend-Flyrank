@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { AuditIcon, MatrixIcon, ShieldIcon } from "@/components/Icons";
+import { AuditIcon } from "@/components/icons/AuditIcon";
+import { MatrixIcon } from "@/components/icons/MatrixIcon";
+import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 const productLinks = [
   { label: "Compare products", href: "/compare" },
