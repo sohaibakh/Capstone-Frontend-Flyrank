@@ -465,10 +465,11 @@ body {
   }
 
   .vanta-clouds-fallback {
-    background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 62%, #ffffff 100%);
+    background: #ffffff;
   }
 
   .onboarding-starfield {
-    background-image: linear-gradient(135deg, #05070d 0%, #071326 58%, #03050a 100%);
+    background: #05070d;
+    background-image: none;
   }
 }
