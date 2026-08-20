@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 interface MobileNavigationProps {
@@ -12,6 +13,7 @@ interface MobileNavigationProps {
 
 export default function MobileNavigation({ items }: MobileNavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -34,16 +36,23 @@ export default function MobileNavigation({ items }: MobileNavigationProps) {
           className="absolute left-0 right-0 top-16 animate-soft-scale border-t border-[#dee1e6] bg-white/96 px-4 py-4 shadow-lg shadow-black/5 md:hidden"
         >
           <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="cb-action rounded-[100px] px-4 py-2 text-sm font-medium text-[#5b616e] hover:bg-[#eef0f3] hover:text-[#0a0b0d]"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {items.map((item) => {
+              const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`cb-action rounded-[100px] px-4 py-2 text-sm font-medium ${
+                    isActive ? "bg-[#0a0b0d] text-white" : "text-[#5b616e] hover:bg-[#eef0f3] hover:text-[#0a0b0d]"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}

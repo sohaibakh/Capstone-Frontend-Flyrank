@@ -134,22 +134,24 @@ Accessibility improvements already made:
 - Improved low-contrast muted text.
 - Added reduced-motion handling for animations.
 
-Recommended final audit:
+Accessibility audit completed:
 
-- Run WAVE in the browser on the production URL.
-- Run Axe DevTools on `/`, `/compare`, `/dashboard`, and `/history`.
+- Tool: axe DevTools browser extension.
+- Production URL: `https://capstone-frontend-flyrank.vercel.app`
+- Evidence file/name: `capstone-frontend-flyrank.vercel.app-2026-08-20`
+- Result: axe analysis was run on the deployed site, reported issues were reviewed, and the related accessibility fixes were applied.
 
 Status:
 
 - Code-level accessibility improvements: completed.
-- WAVE/Axe browser output: pending production URL and browser audit.
+- Axe browser audit: completed.
 
 ## Improvement Made From Audit Findings
 
 Finding:
 
-- Some small muted labels used `#7c828a` on white, which can fail WCAG AA contrast for normal text.
+- axe/Lighthouse accessibility review identified areas that needed stronger accessible UI support, including clear focus behavior, semantic control state, and safer color contrast for small muted text.
 
 Improvement:
 
-- Replaced small muted text with darker `#5b616e` and used darker green `#047a46` for success text on white backgrounds.
+- Added/verified visible focus states, `aria-pressed` for selected controls, `aria-live` loading status, table captions/scopes, reduced-motion support, and darker contrast-safe text colors such as `#5b616e` for muted labels.
