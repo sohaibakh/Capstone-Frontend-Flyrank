@@ -69,43 +69,71 @@ export default function VantaCloudsBackground({ className = "" }: { className?: 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const canRunDecorativeCanvas = window.matchMedia(desktopCloudsQuery).matches;
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktopQuery = window.matchMedia(desktopCloudsQuery);
     let effect: VantaEffect | null = null;
     let cancelled = false;
+    let isLoading = false;
 
-    if (reduceMotion || !canRunDecorativeCanvas) return;
+    const destroyEffect = () => {
+      effect?.destroy();
+      effect = null;
+    };
 
-    loadVantaScripts()
-      .then(() => {
-        const vantaWindow = window as VantaWindow;
+    const shouldRunVanta = () => desktopQuery.matches && !reducedMotionQuery.matches;
 
-        if (cancelled || !containerRef.current || !vantaWindow.VANTA?.CLOUDS) return;
+    const startEffect = () => {
+      if (!shouldRunVanta() || effect || isLoading) return;
 
-        effect = vantaWindow.VANTA.CLOUDS({
-          el: containerRef.current,
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200,
-          minWidth: 200,
-          backgroundColor: 0xffffff,
-          skyColor: 0x68b8d7,
-          cloudColor: 0xadc1de,
-          cloudShadowColor: 0x183550,
-          sunColor: 0xff9919,
-          sunGlareColor: 0xff6633,
-          sunlightColor: 0xff9933,
-          speed: 0.6,
+      isLoading = true;
+      loadVantaScripts()
+        .then(() => {
+          const vantaWindow = window as VantaWindow;
+
+          isLoading = false;
+
+          if (cancelled || !shouldRunVanta() || !containerRef.current || !vantaWindow.VANTA?.CLOUDS) return;
+
+          effect = vantaWindow.VANTA.CLOUDS({
+            el: containerRef.current,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200,
+            minWidth: 200,
+            backgroundColor: 0xffffff,
+            skyColor: 0x68b8d7,
+            cloudColor: 0xadc1de,
+            cloudShadowColor: 0x183550,
+            sunColor: 0xff9919,
+            sunGlareColor: 0xff6633,
+            sunlightColor: 0xff9933,
+            speed: 0.6,
+          });
+        })
+        .catch(() => {
+          isLoading = false;
+          scriptLoadPromise = null;
         });
-      })
-      .catch(() => {
-        scriptLoadPromise = null;
-      });
+    };
+
+    const syncEffectToViewport = () => {
+      if (shouldRunVanta()) {
+        startEffect();
+      } else {
+        destroyEffect();
+      }
+    };
+
+    syncEffectToViewport();
+    desktopQuery.addEventListener("change", syncEffectToViewport);
+    reducedMotionQuery.addEventListener("change", syncEffectToViewport);
 
     return () => {
       cancelled = true;
-      effect?.destroy();
+      desktopQuery.removeEventListener("change", syncEffectToViewport);
+      reducedMotionQuery.removeEventListener("change", syncEffectToViewport);
+      destroyEffect();
     };
   }, []);
 

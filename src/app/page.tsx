@@ -133,7 +133,7 @@ function HomeExperience() {
         className="animate-soft-scale relative grid min-h-[calc(100dvh-112px)] gap-x-8 gap-y-24 overflow-hidden rounded-lg bg-[#0a0b0d]/82 px-6 py-14 text-white shadow-2xl shadow-black/15 backdrop-blur-sm sm:px-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:px-12 lg:py-16"
       >
         <Image
-          src="/hero-flyrank.jpg"
+          src="/hero-flyrank.webp"
           alt=""
           fill
           priority
@@ -254,7 +254,7 @@ function HomeExperience() {
             <div className="cb-card overflow-hidden p-0">
               <div className="relative h-44 bg-[#eef0f3]">
                 <Image
-                  src="/shopify-commerce-dashboard.png"
+                  src="/shopify-commerce-dashboard.webp"
                   alt="Commerce dashboard preview"
                   fill
                   quality={70}
