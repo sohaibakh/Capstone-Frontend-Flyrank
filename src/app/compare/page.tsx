@@ -1,7 +1,5 @@
-import PriceGrid from "@/components/PriceGrid";
-import AiInsights from "@/components/AiInsights";
-import SpecMatrix from "@/components/SpecMatrix";
-import CompareSearchPanel from "@/components/CompareSearchPanel";
+import CompareInteractiveSections from "@/components/CompareInteractiveSections";
+import LazyCompareSearchPanel from "@/components/LazyCompareSearchPanel";
 import { buildCompareResponse, CompareResponse, ShoppingListing } from "@/lib/shopping";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 import { TrendingIcon } from "@/components/icons/TrendingIcon";
@@ -63,7 +61,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         </div>
       </section>
 
-      <CompareSearchPanel
+      <LazyCompareSearchPanel
         query={query}
         countries={countries.split(",").map((country) => country.trim()).filter(Boolean)}
         sort={sort}
@@ -78,9 +76,12 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         <SourceCard icon={SearchIcon} label="Generated" value={new Date(data.generatedAt).toLocaleString()} />
       </section>
 
-      <AiInsights aiAudit={data.aiAudit} datasource={data.datasource} />
-      <PriceGrid listings={filteredListings} />
-      <SpecMatrix countryGroups={filteredCountryGroups} platformGroups={filteredPlatformGroups} />
+      <CompareInteractiveSections
+        data={data}
+        filteredListings={filteredListings}
+        filteredCountryGroups={filteredCountryGroups}
+        filteredPlatformGroups={filteredPlatformGroups}
+      />
     </div>
   );
 }

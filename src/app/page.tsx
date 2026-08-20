@@ -1,6 +1,6 @@
 import Image from "next/image";
-import CompareSearchPanel from "@/components/CompareSearchPanel";
 import HomeBelowFold from "@/components/HomeBelowFold";
+import LazyCompareSearchPanel from "@/components/LazyCompareSearchPanel";
 import { ShieldIcon } from "@/components/icons/ShieldIcon";
 
 export const revalidate = 60;
@@ -9,9 +9,9 @@ const demoQueries = ["MacBook Pro M3", "Sony WH-1000XM5", "iPhone 15 Pro", "Nint
 
 export default function Home() {
   return (
-    <div className="animate-page-in space-y-16 pb-16">
+    <div className="space-y-16 pb-16">
       <section
-        className="animate-soft-scale relative grid min-h-[calc(100dvh-112px)] gap-x-8 gap-y-24 overflow-hidden rounded-lg bg-[#0a0b0d]/82 px-6 py-14 text-white shadow-2xl shadow-black/15 backdrop-blur-sm sm:px-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:px-12 lg:py-16"
+        className="relative grid min-h-[calc(100dvh-112px)] gap-x-8 gap-y-24 overflow-hidden rounded-lg bg-[#0a0b0d]/82 px-6 py-14 text-white shadow-2xl shadow-black/15 backdrop-blur-sm sm:px-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:px-12 lg:py-16"
       >
         <Image
           src="/hero-flyrank.webp"
@@ -39,7 +39,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 min-h-[580px]">
-          <div className="animate-rise-in delay-1 absolute right-0 top-4 w-full rounded-lg border border-white/10 bg-[#16181c]/90 p-6 text-white shadow-2xl shadow-black/30 backdrop-blur lg:w-[390px]">
+          <div className="absolute right-0 top-4 w-full rounded-lg border border-white/10 bg-[#16181c]/90 p-6 text-white shadow-2xl shadow-black/30 backdrop-blur lg:w-[390px]">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-xs text-[#d8dbe0]">Trust score</p>
@@ -62,7 +62,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="animate-rise-in delay-2 absolute bottom-4 left-0 w-[86%] rounded-lg border border-white/40 bg-white/95 p-6 text-[#0a0b0d] shadow-2xl shadow-black/20 backdrop-blur">
+          <div className="absolute bottom-4 left-0 w-[86%] rounded-lg border border-white/40 bg-white/95 p-6 text-[#0a0b0d] shadow-2xl shadow-black/20 backdrop-blur">
             <div className="mb-5 flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eef0f3] text-[#0052ff]">
                 <ShieldIcon className="h-5 w-5" />
@@ -80,7 +80,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 pt-10 lg:col-span-2 lg:pt-16">
-          <CompareSearchPanel
+          <LazyCompareSearchPanel
             query="MacBook Pro M3"
             countries={["US", "GB", "PK"]}
             sort="country-platform"
