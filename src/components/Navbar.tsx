@@ -2,6 +2,7 @@ import Link from "next/link";
 import MobileNavigation from "@/components/MobileNavigation";
 
 const navItems = [
+  { label: "Demo", href: "/demo" },
   { label: "Compare", href: "/compare" },
   { label: "History", href: "/history" },
   { label: "Dashboard", href: "/dashboard" },
